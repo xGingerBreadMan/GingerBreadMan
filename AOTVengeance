@@ -1,5 +1,7 @@
 repeat wait() until game:IsLoaded()
 
+wait(waitTime)
+
 for a,b in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerData.Codes:GetChildren()) do
     if b.Value~=true then 
         local c=tostring(b.Name)
