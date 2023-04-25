@@ -1,0 +1,16 @@
+repeat wait() until game:IsLoaded()
+
+for a,b in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerData.Codes:GetChildren()) do
+    if b.Value~=true then 
+        local c=tostring(b.Name)
+        local d="Lena"
+        local e=game:GetService("ReplicatedStorage").Events.TabMenuEvents.Code;
+        e:FireServer(c,d)
+        wait(.25)
+    end 
+end;
+
+local tpservice= game:GetService("TeleportService")
+local plr = game.Players.LocalPlayer
+
+tpservice:Teleport(game.PlaceId, plr)
