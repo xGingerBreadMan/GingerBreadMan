@@ -1,18 +1,183 @@
-repeat wait() until game:IsLoaded()
+-- Library Setup
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-wait(2.5)
+local MainWindow = Rayfield:CreateWindow({
+    Name = "AOT: Vengeance",
+    LoadingTitle = "...",
+    LoadingSubtitle = "by a gigachad",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "GayMonkeys", -- Create a custom folder for your hub/game
+        FileName = "GayMonkeyHub"
+    },
+})
 
-for a,b in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerData.Codes:GetChildren()) do
-    if b.Value~=true then 
-        local c=tostring(b.Name)
-        local d="Lena"
-        local e=game:GetService("ReplicatedStorage").Events.TabMenuEvents.Code;
-        e:FireServer(c,d)
-        wait(.25)
-    end 
-end;
+local AutoFarm = MainWindow:CreateTab("Farming")
+local AutoSpins = MainWindow:CreateTab("Auto")
+local Misc = MainWindow:CreateTab("Misc", 4483362458)
 
-local tpservice= game:GetService("TeleportService")
-local plr = game.Players.LocalPlayer
+local bloodlineChoices
 
-tpservice:Teleport(game.PlaceId, plr)
+-- Farm Tab
+-- WIP
+local AutoFarm = AutoFarm:CreateLabel("WIP")
+
+-- Auto Tab
+-- Autospin Bloodline
+local AutoSpinBloodline = AutoSpins:CreateToggle({
+    Name = "Autospin Bloodline",
+    CurrentValue = false,
+    Flag = "AutoSpinBloodline", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(bloodlineSpin)
+        while bloodlineSpin do
+            game:GetService("ReplicatedStorage").Events.Bloodline:InvokeServer()
+            wait(0.5)
+            if table.find(bloodlineChoices, game:GetService("Players").LocalPlayer.PlayerData.Settings.Bloodline.Value) then
+                Rayfield:Notify({
+                    Title = "Bloodline",
+                    Content = "OMG YOU GOT " .. game:GetService("Players").LocalPlayer.PlayerData.Settings.Bloodline.Value,
+                    Duration = 5,
+                })
+                bloodlineSpin = false
+                wait(0.5)
+            else
+                Rayfield:Notify({
+                    Title = "Bloodline",
+                    Content = game:GetService("Players").LocalPlayer.PlayerData.Settings.Bloodline.Value,
+                    Duration = 5,
+                })
+            end
+        end
+    end,
+})
+
+-- Autospin Dropdown
+local BloodlineList = AutoSpins:CreateDropdown({
+    Name = "Pick Bloodlines",
+    Options = {"Freudenberg", "Pyxis", "Brzenska", "Dreyse", "Berner", "Hoover", "Springer", "Braun", "Tybur", "Zoë", "Blouse", "Reiss", "Kirstein", "Arlert", "Grice", "Finger", "Smith", "Ackerman", "Leonheart", "Fritz", "Yeager", "Forster"},
+    CurrentOption = {"Option 1"},
+    MultipleOptions = true,
+    Flag = "BloodlineChoices", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(BloodlineOptions)
+        
+        bloodlineChoices = BloodlineOptions
+
+    end,
+})
+
+-- Auto open lootboxes
+local AutoOpenLootboxes = AutoSpins:CreateToggle({
+    Name = "Auto Open Lootboxes",
+    CurrentValue = false,
+    Flag = "AutoOpenLootboxes", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(autoOpen)
+        spawn(function()
+            while OpenLootbox do
+                local args = {
+                [1] = "Lena"}
+     
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TabMenuEvents"):WaitForChild("OpenLootbox"):FireServer(unpack(args))
+                wait()
+            end
+        end) 
+    end
+})
+
+-- Auto farm spins
+local Button = AutoSpins:CreateButton({
+    Name = "Auto Farm Spins, Gold & Lootboxes",
+    Callback = function()
+        local PlaceID = game.PlaceId
+        local AllIDs = {}
+        local foundAnything = ""
+        local actualHour = os.date("!*t").hour
+        local Deleted = false
+        local File = pcall(function()
+            AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+        end)
+        if not File then
+            table.insert(AllIDs, actualHour)
+            writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+        end
+        function TPReturner()
+            local Site;
+            if foundAnything == "" then
+                Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+            else
+                Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+            end
+            local ID = ""
+            if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+                foundAnything = Site.nextPageCursor
+            end
+            local num = 0;
+            for i,v in pairs(Site.data) do
+                local Possible = true
+                ID = tostring(v.id)
+                if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                    for _,Existing in pairs(AllIDs) do
+                        if num ~= 0 then
+                            if ID == tostring(Existing) then
+                                Possible = false
+                            end
+                        else
+                            if tonumber(actualHour) ~= tonumber(Existing) then
+                                local delFile = pcall(function()
+                                    delfile("NotSameServers.json")
+                                    AllIDs = {}
+                                    table.insert(AllIDs, actualHour)
+                                end)
+                            end
+                        end
+                        num = num + 1
+                    end
+                    if Possible == true then
+                        table.insert(AllIDs, ID)
+                        wait()
+                        pcall(function()
+                            writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                            wait()
+                            game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                        end)
+                        wait(4)
+                    end
+                end
+            end
+        end
+
+        function Teleport()
+            while wait() do
+                pcall(function()
+                    TPReturner()
+                    if foundAnything ~= "" then
+                        TPReturner()
+                    end
+                end)
+            end
+        end
+
+        repeat wait() until game:IsLoaded() 
+        for a,b in pairs(game:GetService("Players")[game.Players.LocalPlayer.Name].PlayerData.Codes:GetChildren()) do
+            if b.Value~=true then 
+                local c=tostring(b.Name)
+                local d="Lena"
+                local e=game:GetService("ReplicatedStorage").Events.TabMenuEvents.Code;
+                e:FireServer(c,d)
+                wait(.25)
+            end 
+        end;
+
+        syn.queue_on_teleport("")
+
+        Teleport()
+    end,
+ })
+
+-- Misc Tab
+-- Destroy GUI
+local DestroyGui = Misc:CreateButton({
+    Name = "Destroy GUI",
+    Callback = function()
+        Rayfield:Destroy()
+    end,
+})
