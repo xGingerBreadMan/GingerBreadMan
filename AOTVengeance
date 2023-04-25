@@ -3,12 +3,12 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local MainWindow = Rayfield:CreateWindow({
     Name = "AOT: Vengeance",
-    LoadingTitle = "...",
-    LoadingSubtitle = "by a gigachad",
+    LoadingTitle = "AOT: Vengeance",
+    LoadingSubtitle = "by GingerBreadMan",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "GayMonkeys", -- Create a custom folder for your hub/game
-        FileName = "GayMonkeyHub"
+        FolderName = "GingerBreadHub", -- Create a custom folder for your hub/game
+        FileName = "GingerBreadHub"
     },
 })
 
@@ -167,7 +167,7 @@ local Button = AutoSpins:CreateButton({
             end 
         end;
 
-        syn.queue_on_teleport("")
+        syn.queue_on_teleport("https://raw.githubusercontent.com/xGingerBreadMan/GingerBreadMan/main/AOTVengeance")
 
         Teleport()
     end,
