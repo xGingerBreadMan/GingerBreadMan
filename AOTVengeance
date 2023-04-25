@@ -167,8 +167,7 @@ local Button = AutoSpins:CreateButton({
             end 
         end;
 
-        syn.queue_on_teleport("https://raw.githubusercontent.com/xGingerBreadMan/GingerBreadMan/main/AOTVengeance")
-
+        syn.queue_on_teleport(loadstring(game:HttpGet("https://raw.githubusercontent.com/xGingerBreadMan/GingerBreadMan/main/AOTVengeance"))())
         Teleport()
     end,
  })
