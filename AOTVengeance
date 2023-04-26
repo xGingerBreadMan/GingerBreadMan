@@ -14,7 +14,7 @@ local MainWindow = Rayfield:CreateWindow({
 
 local AutoFarm = MainWindow:CreateTab("Farming")
 local AutoSpins = MainWindow:CreateTab("Auto")
-local Misc = MainWindow:CreateTab("Misc", 4483362458)
+local Misc = MainWindow:CreateTab("Misc")
 
 local bloodlineChoices
 
